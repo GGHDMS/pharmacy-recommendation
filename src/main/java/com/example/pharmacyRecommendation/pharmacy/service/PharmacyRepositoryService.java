@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +40,12 @@ public class PharmacyRepositoryService {
     public void startReadOnlyMethod(Long id) {
         pharmacyRepository.findById(id).ifPresent(pharmacy ->
                 pharmacy.changePharmacyAddress("서울 특별시 광진구"));
+    }
+
+    @Transactional
+    public List<Pharmacy> saveAll(List<Pharmacy> pharmacyList) {
+        if(CollectionUtils.isEmpty(pharmacyList)) return Collections.emptyList();
+        return pharmacyRepository.saveAll(pharmacyList);
     }
 
     @Transactional
