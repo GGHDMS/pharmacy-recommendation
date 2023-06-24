@@ -64,5 +64,5 @@ class PharmacyRepositoryServiceTest extends AbstractIntegrationContainerBaseTest
         then:
         result.get(0).getPharmacyAddress() == address
     }
-    
+
 }
