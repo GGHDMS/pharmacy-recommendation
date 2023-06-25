@@ -28,11 +28,11 @@ public class KakaoUriBuilderService {
 
         double meterRadius = radius * 1000;
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_CATEGORY_SEARCH_URL);
         uriBuilder.queryParam("category_group_code", category);
         uriBuilder.queryParam("x", longitude);
         uriBuilder.queryParam("y", latitude);
-        uriBuilder.queryParam("radius", radius);
+        uriBuilder.queryParam("radius", meterRadius);
         uriBuilder.queryParam("sort", "distance");
 
         URI uri = uriBuilder.build().encode().toUri();
