@@ -1,5 +1,6 @@
 package com.example.pharmacyRecommendation.pharmacy.service;
 
+import com.example.pharmacyRecommendation.api.dto.DocumentDto;
 import com.example.pharmacyRecommendation.api.dto.KakaoApiResponseDto;
 import com.example.pharmacyRecommendation.api.service.KakaoAddressSearchService;
 import com.example.pharmacyRecommendation.direction.entity.Direction;
@@ -29,7 +30,10 @@ public class PharmacyRecommendationService {
             return;
         }
 
-        List<Direction> directionList = directionService.buildDirectionList(kakaoApiResponseDto.getDocumentList().get(0));
+        DocumentDto documentDto = kakaoApiResponseDto.getDocumentList().get(0);
+
+//        List<Direction> directionList = directionService.buildDirectionList(kakaoApiResponseDto.getDocumentList().get(0));
+        List<Direction> directionList = directionService.buildDirectionListByCategoryApi(documentDto);
 
         directionService.saveAll(directionList);
     }

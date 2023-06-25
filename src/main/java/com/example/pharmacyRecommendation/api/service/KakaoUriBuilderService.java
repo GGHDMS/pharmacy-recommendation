@@ -12,12 +12,31 @@ public class KakaoUriBuilderService {
 
     private static final String KAKAO_LOCAL_SEARCH_ADDRESS_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 
+    private static final String KAKAO_LOCAL_CATEGORY_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/category.json";
+
     public URI builderByAddressSearch(String address) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL);
         uriBuilder.queryParam("query", address);
 
         URI uri = uriBuilder.build().encode().toUri();
         log.info("[KakaoUriBuilderService builderByAddressSearch] address: {}, uri: {}", address, uri);
+
+        return uri;
+    }
+
+    public URI builderByCategorySearch(double latitude, double longitude, double radius, String category) {
+
+        double meterRadius = radius * 1000;
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL);
+        uriBuilder.queryParam("category_group_code", category);
+        uriBuilder.queryParam("x", longitude);
+        uriBuilder.queryParam("y", latitude);
+        uriBuilder.queryParam("radius", radius);
+        uriBuilder.queryParam("sort", "distance");
+
+        URI uri = uriBuilder.build().encode().toUri();
+        log.info("[KakaoUriBuilderService builderByAddressSearch] uri: {}", uri);
 
         return uri;
     }
