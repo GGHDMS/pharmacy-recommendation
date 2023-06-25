@@ -47,7 +47,7 @@ public class DirectionService {
                 )
                 .filter(direction -> direction.getDistance() <= RADIUS_KM)
                 .sorted(Comparator.comparing(Direction::getDistance))
-                .limit(3)
+                .limit(MAX_SEARCH_COUNT)
                 .collect(Collectors.toList());
     }
 
