@@ -1,5 +1,6 @@
 package com.example.pharmacyRecommendation.direction.controller
 
+
 import com.example.pharmacyRecommendation.direction.dto.OutputDto
 import com.example.pharmacyRecommendation.pharmacy.service.PharmacyRecommendationService
 import org.springframework.test.web.servlet.MockMvc
@@ -19,12 +20,11 @@ class FormControllerTest extends Specification {
     private List<OutputDto> outputDtoList
 
     def setup() {
-        // FormController Mockmvc 객체로 만든다.
+        // FormController MockMvc 객체로 만든다.
         mockMvc = MockMvcBuilders.standaloneSetup(new FormController(pharmacyRecommendationService))
                 .build()
 
-        outputDtoList = new ArrayList()
-
+        outputDtoList = new ArrayList<>()
         outputDtoList.addAll(
                 OutputDto.builder()
                         .pharmacyName("pharmacy1")
@@ -35,18 +35,20 @@ class FormControllerTest extends Specification {
         )
     }
 
-    def "GET / "() {
+    def "GET /"() {
+
         expect:
-        // FromController 의 "/" get 방식으로 호출
+        // FormController 의 "/" URI를 get방식으로 호출
         mockMvc.perform(get("/"))
-                .andExpect { handler().handlerType(FormController.class) }
-                .andExpect { handler().methodName("home") }
-                .andExpect { status().isOk() }
-                .andExpect { view().name("home") }
-                .andDo { log() }
+                .andExpect(handler().handlerType(FormController.class))
+                .andExpect(handler().methodName("main"))
+                .andExpect(status().isOk()) // 예상 값을 검증한다.
+                .andExpect(view().name("main"))
+                .andDo(log())
     }
 
     def "POST /search"() {
+
         given:
         String inputAddress = "서울 성북구 종암동"
 
@@ -60,11 +62,10 @@ class FormControllerTest extends Specification {
         }) >> outputDtoList
 
         resultActions
-                .andExpect { status().isOk() }
-                .andExpect { view().name("output") }
-                .andExpect { model().attributeExists("outputFromList") }
-                .andExpect { model().attribute("outputFormList", outputDtoList) }
-                .andDo { print() }
+                .andExpect(status().isOk())
+                .andExpect(view().name("output"))
+                .andExpect(model().attributeExists("outputFormList")) // model에 outputFormList라는 key가 존재하는지 확인
+                .andExpect(model().attribute("outputFormList", outputDtoList))
+                .andDo(print())
     }
-
 }

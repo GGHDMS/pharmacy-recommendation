@@ -1,13 +1,11 @@
 package com.example.pharmacyRecommendation.direction.controller;
 
-import com.example.pharmacyRecommendation.direction.entity.Direction;
 import com.example.pharmacyRecommendation.direction.service.DirectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 @Slf4j
@@ -19,17 +17,11 @@ public class DirectionController {
 
     @GetMapping("/dir/{encodedId}")
     public String searchDirection(@PathVariable("encodedId") String encodedId) {
-        Direction direction = directionService.findById(encodedId);
+        String resultUrl = directionService.findDirectionUrlById(encodedId);
 
-        String params = String.join(",", direction.getTargetPharmacyName(),
-                String.valueOf(direction.getTargetLatitude()), String.valueOf(direction.getTargetLongitude()));
+        log.info("[DirectionController searchDirection] direction url: {}", resultUrl);
 
-        String result = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params)
-                .toUriString();
-
-        log.info("direction params: {}, url: {}", params, result);
-
-        return "redirect:" + result;
+        return "redirect:" + resultUrl;
     }
 
 }

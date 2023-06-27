@@ -1,20 +1,32 @@
 package com.example.pharmacyRecommendation.direction.service
 
 import com.example.pharmacyRecommendation.api.dto.DocumentDto
+import com.example.pharmacyRecommendation.api.service.KakaoCategorySearchService
+import com.example.pharmacyRecommendation.direction.repository.DirectionRepository
 import com.example.pharmacyRecommendation.pharmacy.dto.PharmacyDto
 import com.example.pharmacyRecommendation.pharmacy.service.PharmacySearchService
 import spock.lang.Specification
+import spock.lang.Subject
 
 class DirectionServiceTest extends Specification {
 
     private PharmacySearchService pharmacySearchService = Mock()
-    private DirectionService directionService = new DirectionService(pharmacySearchService)
+    private DirectionRepository directionRepository = Mock()
+    private Base62Service base62Service = Mock()
 
-    private List<PharmacyDto> pharmacyDtoList
+    private KakaoCategorySearchService kakaoCategorySearchService = Mock()
+
+    @Subject
+    private DirectionService directionService = new DirectionService(
+            pharmacySearchService, directionRepository,
+            base62Service, kakaoCategorySearchService)
+
+    private List<PharmacyDto> pharmacyList
 
     def setup() {
-        pharmacyDtoList = new ArrayList<>()
-        pharmacyDtoList.addAll(
+
+        pharmacyList = new ArrayList<>()
+        pharmacyList.addAll(
                 PharmacyDto.builder()
                         .id(1L)
                         .pharmacyName("돌곶이온누리약국")
@@ -32,7 +44,23 @@ class DirectionServiceTest extends Specification {
         )
     }
 
-    def "buildDirectionList - 결과 값이 거리 순으로 정렬이 되는지 확인"() {
+    def "calculateDistance"() {
+        given:
+        def latitude1 = 37.5505
+        def longitude1 = 127.0817
+
+        def latitude2 = 37.541
+        def longitude2 = 127.0766
+        def result = "1.1"
+
+        when:
+        def distance = directionService.calculateDistance(latitude1, longitude1, latitude2, longitude2)
+
+        then:
+        String.format("%.1f", distance) == result
+    }
+
+    def "buildDirectionList - 결과 값이 거리순 정렬이 되는지 확인"() {
         given:
         def addressName = "서울 성북구 종암로10길"
         double inputLatitude = 37.5960650456809
@@ -43,19 +71,23 @@ class DirectionServiceTest extends Specification {
                 .latitude(inputLatitude)
                 .longitude(inputLongitude)
                 .build()
-        when:
-        pharmacySearchService.searchPharmacyDtoList() >> pharmacyDtoList
-        def result = directionService.buildDirectionList(documentDto)
 
+        when:
+        pharmacySearchService.searchPharmacyDtoList() >> pharmacyList
+
+        def results = directionService.buildDirectionList(documentDto)
         then:
-        result.size() == 2
-        result.get(0).targetPharmacyName == "호수온누리약국"
-        result.get(1).targetPharmacyName == "돌곶이온누리약국"
+
+        results.size() == 2
+        results.get(0).targetPharmacyName == "호수온누리약국"
+        results.get(1).targetPharmacyName == "돌곶이온누리약국"
+        String.format("%.1f", results.get(0).distance) == "1.6"
+        String.format("%.1f", results.get(1).distance) == "2.4"
     }
 
-    def "buildDirectionList - 정해진 반경 10km 내에 검색이 되는지 확인"() {
+    def "buildDirectionList -  정해진 반경 10km 내에 검색이 되는지 확인"() {
         given:
-        pharmacyDtoList.add(
+        pharmacyList.add(
                 PharmacyDto.builder()
                         .id(3L)
                         .pharmacyName("경기약국")
@@ -73,14 +105,15 @@ class DirectionServiceTest extends Specification {
                 .latitude(inputLatitude)
                 .longitude(inputLongitude)
                 .build()
+
         when:
-        pharmacySearchService.searchPharmacyDtoList() >> pharmacyDtoList
-        def result = directionService.buildDirectionList(documentDto)
+        pharmacySearchService.searchPharmacyDtoList() >> pharmacyList
 
+        def results = directionService.buildDirectionList(documentDto)
         then:
-        result.size() == 2
-        result.get(0).targetPharmacyName == "호수온누리약국"
-        result.get(1).targetPharmacyName == "돌곶이온누리약국"
-    }
 
+        results.size() == 2
+        results.get(0).targetPharmacyName == "호수온누리약국"
+        results.get(1).targetPharmacyName == "돌곶이온누리약국"
+    }
 }
