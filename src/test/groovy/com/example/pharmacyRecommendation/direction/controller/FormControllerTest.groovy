@@ -41,9 +41,9 @@ class FormControllerTest extends Specification {
         // FormController 의 "/" URI를 get방식으로 호출
         mockMvc.perform(get("/"))
                 .andExpect(handler().handlerType(FormController.class))
-                .andExpect(handler().methodName("main"))
+                .andExpect(handler().methodName("home"))
                 .andExpect(status().isOk()) // 예상 값을 검증한다.
-                .andExpect(view().name("main"))
+                .andExpect(view().name("home"))
                 .andDo(log())
     }
 
